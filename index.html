@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#171717">
+<title>İbni Sina Öncü Döner | Menü</title>
+<style>
+:root{--red:#c51f2b;--ink:#171717;--paper:#fffaf4}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:var(--ink);color:white;text-align:center;padding:28px 16px 22px}
+.logo{font-weight:900;font-size:clamp(25px,7vw,38px);letter-spacing:-1px}.logo span{color:#ef3340}
+header p{margin:6px 0 0;color:#ddd}
+main{max-width:720px;margin:auto;padding:18px 14px 50px}
+.notice{background:#fff;border:1px solid #eadfd2;border-radius:14px;padding:12px 14px;margin-bottom:18px;color:#555;font-size:14px}
+h2{font-size:20px;margin:24px 0 10px;border-left:5px solid var(--red);padding-left:10px}
+.item{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;background:white;border:1px solid #eee4da;border-radius:13px;padding:13px 14px;margin:9px 0}
+.name{font-weight:750}.desc{font-size:13px;color:#666;margin-top:3px}.price{font-weight:850;color:var(--red);white-space:nowrap}
+footer{text-align:center;color:#777;font-size:12px;padding:18px}
+button{border:0;border-radius:9px;background:var(--red);color:white;padding:10px 14px;font-weight:700}
+.admin{margin:24px 0;background:white;border:1px solid #eadfd2;border-radius:14px;padding:14px}
+.admin input{width:100%;padding:10px;margin:5px 0 10px;border:1px solid #ccc;border-radius:8px}
+.small{font-size:12px;color:#777}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header><img src="https://oncudoneradiyaman.com/images/oncu-logo.png?v=3" alt="Öncü Döner logosu" style="width:118px;height:118px;object-fit:contain"><p style="font-weight:800;font-size:20px;color:white;margin-top:8px">İbni Sina Şubesi · Menü</p></header>
+<main>
+<div class="notice">Öncü Döner’in logosu, menü düzeni ve kırmızı-siyah marka renkleri esas alınarak hazırlanmış şube menüsü. Ürün fotoğrafları için kaynak sitedeki görsellerin tek tek eşleştirilmesi gerekiyor.</div>
+<div id="menu"></div>
+<section class="admin">
+<h2>Menü yönetimi</h2>
+<p class="small">Fiyatları bu cihazda değiştirmek için yönetici bölümünü açın. Bu taslak sürümde değişiklikler yalnızca bu tarayıcıda saklanır; tüm müşterilere yansıtılması için çevrimiçi yönetim bağlantısı kurulmalıdır.</p>
+<button id="loginBtn">Yönetici girişi</button>
+<div id="editor" hidden>
+<label class="small" for="pin">Yönetici şifresi</label><input id="pin" type="password" placeholder="Şifre">
+<button id="unlock">Aç</button>
+<div id="editArea" hidden></div>
+</div>
+</section>
+</main>
+<footer>İbni Sina Öncü Döner</footer>
+<script>
+const initial=[
+{cat:"Menüler",items:[
+["Combo Menü","Tavuk dürüm 100 g, patates, Pepsi Zero Sugar",290],
+["Combo Zurna Menü","Tavuk zurna 150 g, patates, Pepsi Zero Sugar",330],
+["Avantaj Menü","Tavuk dürüm 100 g, patates, ayran",260],
+["Avantaj Zurna Menü","Tavuk zurna 150 g, patates, ayran",300],
+["Tavuk Servis","Tavuk döner 160 g, turşu, patates, domates, baharatlı sos",310],
+["Zurna 150 g","",210],["Öncü Dürüm 100 g","",170],
+["Tavuk Öncü Menü","İçerik bilgisi şubeden alınabilir",470],
+["Mexican Burrito","",230],["Klasik Burrito","",230]]},
+{cat:"İçecekler",items:[
+["Pepsi 330 ml","",70],["Yedigün 330 ml","",70],["7UP 130 ml","",70],
+["Lipton 330 ml","",70],["Tropicana 330 ml","",70],["Sütaş Ayran 175 ml","",40],
+["Sade soda 250 ml","",30],["Meyveli soda 250 ml","",50],
+["Şalgam 250 ml","",50],["Su 500 ml","",15]]}
+];
+let data;try{data=JSON.parse(localStorage.getItem("ibnisina-menu"))||initial}catch(e){data=initial}
+const render=()=>{document.getElementById("menu").innerHTML=data.map(g=>`<section><h2>${g.cat}</h2>${g.items.map((x,i)=>`<article class="item"><div><div class="name">${x[0]}</div>${x[1]?`<div class="desc">${x[1]}</div>`:""}</div><div class="price">${Number(x[2]).toLocaleString("tr-TR")} TL</div></article>`).join("")}</section>`).join("")};
+render();
+document.getElementById("loginBtn").onclick=()=>document.getElementById("editor").hidden=false;
+document.getElementById("unlock").onclick=()=>{
+ if(document.getElementById("pin").value!=="2468"){alert("Şifre yanlış.");return}
+ const area=document.getElementById("editArea");area.hidden=false;
+ area.innerHTML=data.map((g,gi)=>`<h3>${g.cat}</h3>`+g.items.map((x,ii)=>`<label class="small">${x[0]} — fiyat (TL)</label><input type="number" min="0" step="1" data-g="${gi}" data-i="${ii}" value="${x[2]}">`).join("")).join("")+`<button id="save">Fiyatları kaydet</button><p class="small">İlk kurulum şifresi: 2468. Yayından önce mutlaka değiştirin.</p>`;
+ document.getElementById("save").onclick=()=>{area.querySelectorAll("input[data-g]").forEach(el=>data[+el.dataset.g].items[+el.dataset.i][2]=Number(el.value));localStorage.setItem("ibnisina-menu",JSON.stringify(data));render();alert("Bu cihazda fiyatlar kaydedildi.")};
+};
+</script>
+</body></html>
